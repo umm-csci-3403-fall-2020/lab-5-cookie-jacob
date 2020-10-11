@@ -4,6 +4,7 @@ import java.io.*;
 
 public class EchoClient {
 	public static final int portNumber = 6013;
+
 	public static void main(String[] args) throws IOException {
 		String server;
 		if (args.length == 0){
@@ -15,16 +16,21 @@ public class EchoClient {
 
 		try {
 			Socket socket = new Socket(server, portNumber); //creating socket connection using portNumber
-			InputStream input = socket.getInputStream(); //input from the user
-			Reader inputStreamReader = new InputStreamReader(input); //reader to read the input
-			int nextByte = inputStream.read(); //input holder
+			DataInputStream input = new DataInputStream(System.in); //receiving from System.in
+			DataOutputStream output = new DataOutputStream(socket.getOutputStream()); //writing to the server
+			
+			int nextByte = input.read(); //input holder
 			char c;
+
 			while (nextByte != -1){ //while there is input
 				c = (char)nextByte; //define the input as a character
-				System.out.println(c); //print out what is input
-				nextByte = inputStream.read(); //keep reading
+				output.write(nextByte); //write the byte to the output which will send to the server
+				output.flush();
+				nextByte = input.read(); //keep reading the next byte
 			}
-			inputStreamReader.close();
+
+			input.close();
+			output.close();
 			socket.close();
 		}
 		catch (ConnectException ce){
@@ -33,7 +39,6 @@ public class EchoClient {
 		}
 		catch (IOException ioe){
 			System.out.println("We caught an unexpected exception");
-			System.err.println(ioe);
 		}
 	}
 }
