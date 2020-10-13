@@ -16,21 +16,28 @@ public class EchoClient {
 
 		try {
 			Socket socket = new Socket(server, portNumber); //creating socket connection using portNumber
-			DataInputStream input = new DataInputStream(System.in); //receiving from System.in
-			DataOutputStream output = new DataOutputStream(socket.getOutputStream()); //writing to the server
-			
-			int nextByte = input.read(); //input holder
+			//DataInputStream input = new DataInputStream(System.in); //receiving from System.in
+			//DataOutputStream output = new DataOutputStream(socket.getOutputStream()); //writing to the server
+			InputStream input = socket.getInputStream(); //Input stream from the server, so it's showing what the server sends
+			OutputStream output = socket.getOutputStream(); //Output stream going to the server
+
+
+			int nextByte; //gives the ASCII value of the characters in the input
 			char c;
 
-			while (nextByte != -1){ //while there is input
-				c = (char)nextByte; //define the input as a character
-				output.write(nextByte); //write the byte to the output which will send to the server
-				output.flush();
-				nextByte = input.read(); //keep reading the next byte
+			while ((nextByte = System.in.read()) != -1){ //while there is input
+				c = (char)nextByte; //casting to a character so it returns what you actually input instead of your input's ASCII value
+				output.write(c); //write the byte to the output which will send to the server
+				output.flush(); //send the output to the server
+				System.out.write(input.read()); //server writing what it needs to send back to the client
+								//System.out.write deals with a stream of bytes
+				System.out.flush(); //flush the info from the server to the client 
 			}
+			//DataInputStream input = new DataInputStream(socket.getInputStream());
+			//DataOutputStream output = new DataOutputStream(System.in);
 
-			input.close();
-			output.close();
+			//input.close();
+			//output.close();
 			socket.close();
 		}
 		catch (ConnectException ce){
